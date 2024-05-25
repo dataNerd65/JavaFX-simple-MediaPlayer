@@ -8,6 +8,7 @@ package com.cozytheDEV;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Slider;
@@ -37,21 +38,23 @@ public class MediaClass implements Initializable {
     Stage stage;
 
     @FXML
-    public void openMediaFile(){
+    public void openMediaFile() {
         FileChooser fileChooser = new FileChooser();
 
         fileChooser.setTitle("Select Media To Play");
         fileChooser.getExtensionFilters().addAll(
                 // To filter only specific Video formats
                 // To add more Video formats in future
-                new FileChooser.ExtensionFilter("Video Files","*.mp4")
+                new FileChooser.ExtensionFilter("Audio Files", "*mp3"),
+                new FileChooser.ExtensionFilter("Audio Files", "*m4a"),
+                new FileChooser.ExtensionFilter("Video Files", "*.mp4")
                 //new FileChooser.ExtensionFilter("All Files","*.*")
         );
 
 
         File file = fileChooser.showOpenDialog(stage);
 
-        if (file != null){
+        if (file != null) {
             String MEDIA_URL = file.toString();
             // The regex below only extracts the Tittle part of the media
 
@@ -63,10 +66,10 @@ public class MediaClass implements Initializable {
               MediaClass the Title part which usually the last String after split
             */
 
-			// On Linux
-			// String [] MediaTitlePartsMain = MEDIA_URL.split("/");
-			// MediaClass the Title part which usually the last String after split
-			// String MediaTitle = MediaTitlePartsMain [MediaTitlePartsMain.length - 1];
+            // On Linux
+            // String [] MediaTitlePartsMain = MEDIA_URL.split("/");
+            // MediaClass the Title part which usually the last String after split
+            // String MediaTitle = MediaTitlePartsMain [MediaTitlePartsMain.length - 1];
             // lblMediaTitle.setText(MediaTitle);
 
             // Correct Way to get Filename
@@ -98,7 +101,6 @@ public class MediaClass implements Initializable {
     }
 
 
-
     @Override
     public void initialize(URL Location, ResourceBundle resources) {
     }
@@ -109,8 +111,18 @@ public class MediaClass implements Initializable {
 
     @FXML
     private void play(){
-        mediaPlayer.play();
+        if(mediaPlayer !=null){
+            mediaPlayer.play();
+        }else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            System.out.println("Media payer not initialized. Please open a media file first.");
+            alert.setContentText("Media payer not initialized. Please open a media file first.");
+
+            alert.showAndWait();
     }
+}
 
     @FXML
     private void pause(){
