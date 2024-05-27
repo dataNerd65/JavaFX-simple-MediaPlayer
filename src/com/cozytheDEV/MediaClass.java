@@ -51,19 +51,26 @@ public class MediaClass implements Initializable {
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) {
-            String MEDIA_URL = file.toString();
-            lblMediaTitle.setText(file.getName());
+        String MEDIA_URL = file.toURI().toString();
+        System.out.println("Media file Url: " + MEDIA_URL); //printing media url
+        lblMediaTitle.setText(file.getName());
 
-            Media media = new Media(new File(MEDIA_URL).toURI().toString());
-
+        try {
+            Media media = new Media(MEDIA_URL);
             mediaPlayer = new MediaPlayer(media);
+        } catch (Exception e){
+            e.printStackTrace();
 
+        }
+        if (mediaPlayer != null){
             theVolumeSlider.setValue(mediaPlayer.getVolume() * 100);
             theVolumeSlider.valueProperty().addListener(observable -> mediaPlayer.setVolume(theVolumeSlider.getValue() / 100));
 
             mainMediaView.setMediaPlayer(mediaPlayer);
-        }
+
+        }}
     }
+
 
     @Override
     public void initialize(URL Location, ResourceBundle resources) {
