@@ -41,6 +41,9 @@ public class MediaClass implements Initializable {
     public void openMediaFile() {
         FileChooser fileChooser = new FileChooser();
 
+        //setting the initial dir to Music dir
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Music"));
+
         fileChooser.setTitle("Select Media To Play");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Audio Files", "*mp3"),
@@ -58,6 +61,7 @@ public class MediaClass implements Initializable {
         try {
             Media media = new Media(MEDIA_URL);
             mediaPlayer = new MediaPlayer(media);
+            System.out.println("Media player created successfully"); // printing success message
         } catch (Exception e){
             e.printStackTrace();
 
@@ -68,7 +72,12 @@ public class MediaClass implements Initializable {
 
             mainMediaView.setMediaPlayer(mediaPlayer);
 
-        }}
+        }else{
+            System.out.println("Media player is null");
+        }
+        }else{
+            System.out.println("File is null!"); //Print error message
+        }
     }
 
 
