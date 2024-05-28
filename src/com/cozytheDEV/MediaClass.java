@@ -47,7 +47,7 @@ public class MediaClass implements Initializable {
         fileChooser.setTitle("Select Media To Play");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Audio Files", "*mp3"),
-                new FileChooser.ExtensionFilter("Audio Files", "*m4a"),
+                //new FileChooser.ExtensionFilter("Audio Files", "*m4a"),
                 new FileChooser.ExtensionFilter("Video Files", "*.mp4")
         );
 
