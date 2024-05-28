@@ -31,100 +31,107 @@ public class MediaClass implements Initializable {
     @FXML
     private Slider theVolumeSlider;
 
+    @FXML
+    private MenuBar menuBar;
+
     private MediaPlayer mediaPlayer;
     private Stage stage;
 
     @FXML
-    private MenuBar menuBar;
-
-    @FXML
     public void openMediaFile() {
         FileChooser fileChooser = new FileChooser();
-
-        //setting the initial dir to Music dir
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Music"));
-
         fileChooser.setTitle("Select Media To Play");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Audio Files", "*mp3"),
-                //new FileChooser.ExtensionFilter("Audio Files", "*m4a"),
+                new FileChooser.ExtensionFilter("Audio Files", "*.mp3"),
                 new FileChooser.ExtensionFilter("Video Files", "*.mp4")
         );
 
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) {
-        String MEDIA_URL = file.toURI().toString();
-        System.out.println("Media file Url: " + MEDIA_URL); //printing media url
-        lblMediaTitle.setText(file.getName());
+            String mediaUrl = file.toURI().toString();
+            System.out.println("Media file URL: " + mediaUrl);
+            lblMediaTitle.setText(file.getName());
 
-        try {
-            Media media = new Media(MEDIA_URL);
-            mediaPlayer = new MediaPlayer(media);
-            System.out.println("Media player created successfully"); // printing success message
-        } catch (Exception e){
-            e.printStackTrace();
+            try {
+                Media media = new Media(mediaUrl);
+                mediaPlayer = new MediaPlayer(media);
+                System.out.println("Media player created successfully");
 
+                mediaPlayer.setOnError(() -> {
+                    System.out.println("Media error occurred: " + mediaPlayer.getError().getMessage());
+                    showAlert("Media Error", mediaPlayer.getError().getMessage());
+                });
+
+                initializeMediaPlayer();
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "Failed to create MediaPlayer: " + e.getMessage());
+            }
+        } else {
+            System.out.println("File is null!");
         }
-        if (mediaPlayer != null){
+    }
+
+    private void initializeMediaPlayer() {
+        if (mediaPlayer != null) {
             theVolumeSlider.setValue(mediaPlayer.getVolume() * 100);
             theVolumeSlider.valueProperty().addListener(observable -> mediaPlayer.setVolume(theVolumeSlider.getValue() / 100));
-
             mainMediaView.setMediaPlayer(mediaPlayer);
 
-        }else{
+            mediaPlayer.setOnReady(() -> System.out.println("Media is ready to play"));
+            mediaPlayer.setOnEndOfMedia(() -> System.out.println("End of media"));
+        } else {
             System.out.println("Media player is null");
         }
-        }else{
-            System.out.println("File is null!"); //Print error message
-        }
     }
 
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     @Override
-    public void initialize(URL Location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("Select a media to play!");
+    }
+
+    @FXML
+    private void play() {
         if (mediaPlayer != null) {
-            MediaControl mediaControl = new MediaControl(mediaPlayer);
-            mediaControlContainer.getChildren().add(mediaControl);
-        } else {
-            System.out.println("Select a media to play!");
-        }
-    }
-
-    @FXML
-    private void play(){
-        if(mediaPlayer !=null){
             mediaPlayer.play();
-        }else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText(null);
-            System.out.println("Media player not initialized. Please open a media file first.");
-            alert.setContentText("Media player not initialized. Please open a media file first.");
-
-            alert.showAndWait();
+        } else {
+            showAlert("Information Dialog", "Media player not initialized. Please open a media file first.");
         }
     }
 
     @FXML
-    private void pause(){
+    private void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
     }
 
     @FXML
-    private void stop(){
+    private void stop() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
     }
 
     @FXML
-    private void restart(){
+    private void restart() {
         if (mediaPlayer != null) {
             mediaPlayer.seek(mediaPlayer.getStartTime());
             mediaPlayer.play();
         }
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 }
